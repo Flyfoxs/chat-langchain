@@ -10,6 +10,22 @@ from langchain.llms import OpenAI
 from langchain.vectorstores.base import VectorStore
 
 
+
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+
+
+from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT
+from langchain.chains.llm import LLMChain
+from langchain.chains.question_answering import load_qa_chain
+from langchain.vectorstores.base import VectorStore
+
+
+class ChatVectorDBChainExt(ChatVectorDBChain):
+
+    def prep_inputs(self, inputs: str):
+        return super().prep_inputs({"question": inputs, "chat_history": []})
+
+
 def get_chain(
     vectorstore: VectorStore, question_handler, stream_handler, tracing: bool = False
 ) -> ChatVectorDBChain:
@@ -45,10 +61,13 @@ def get_chain(
         streaming_llm, chain_type="stuff", prompt=QA_PROMPT, callback_manager=manager
     )
 
-    qa = ChatVectorDBChain(
+    qa = ChatVectorDBChainExt(
         vectorstore=vectorstore,
         combine_docs_chain=doc_chain,
         question_generator=question_generator,
         callback_manager=manager,
     )
+
+    
+
     return qa
