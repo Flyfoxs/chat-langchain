@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from langchain.vectorstores import VectorStore
 
 from callback import QuestionGenCallbackHandler, StreamingLLMCallbackHandler
-from query_data import get_chain
+from query_data import get_agent
 from schemas import ChatResponse
 
 app = FastAPI()
@@ -38,7 +38,7 @@ async def websocket_endpoint(websocket: WebSocket):
     question_handler = QuestionGenCallbackHandler(websocket)
     stream_handler = StreamingLLMCallbackHandler(websocket)
     chat_history = []
-    qa_chain = get_chain(vectorstore, question_handler, stream_handler)
+    qa_chain = get_agent(websocket)
     # Use the below line instead of the above line to enable tracing
     # Ensure `langchain-server` is running
     # qa_chain = get_chain(vectorstore, question_handler, stream_handler, tracing=True)
