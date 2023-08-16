@@ -169,15 +169,15 @@ def get_tools():
     )
     local_tool.return_direct = True
 
-    # db_tool = Tool(
-    #     name='Query Info about Data',
-    #     func=get_db_chain().run,
-    #     description='Query Info about Data in table, Hive or Spark'
-    # )
-    # db_tool.return_direct = True
+    db_tool = Tool(
+        name='Query Info about Data',
+        func=get_db_chain().run,
+        description='Query Info about Data in table, Hive or Spark'
+    )
+    db_tool.return_direct = True
 
     tools = [local_tool
-        # , db_tool
+        , db_tool
         # , get_general_chain()
              ]
     return tools
@@ -205,7 +205,7 @@ if __name__ == '__main__':
 
     zero_shot_agent = get_agent()
     result = zero_shot_agent("Who is Ubix?")
-    # result = zero_shot_agent("Could you help to count how many rows are there in the table test_del?")
+    result = zero_shot_agent("Could you help to count how many rows are there in the table test_del?")
 
     #
     # from langchain.memory import ConversationBufferMemory

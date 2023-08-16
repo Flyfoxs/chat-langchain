@@ -13,3 +13,4 @@ bs4
 unstructured
 libmagic
 weaviate-client
+tiktoken==0.4.0
