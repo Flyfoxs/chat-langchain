@@ -199,18 +199,32 @@ def get_agent(websocket=None, question_handler=None, stream_handler=None):
     )
     return zero_shot_agent
 
+def get_agent_conversion():
+    from langchain.memory import ConversationBufferMemory
+    from langchain.chat_models import ChatOpenAI
+    tools = get_tools()
+    llm = OpenAI(temperature=0)
+    manager = AsyncCallbackManager([])
+    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    from langchain.prompts import MessagesPlaceholder
+    chat_history = MessagesPlaceholder(variable_name="chat_history")
+    llm = ChatOpenAI(temperature=0)
+    agent_chain = initialize_agent(tools, llm, 
+        agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION, 
+        verbose=True,
+        memory=memory,
+        callback_manager=manager,
+        agent_kwargs = {
+            "memory_prompts": [chat_history],
+            "input_variables": ["input", "agent_scratchpad", "chat_history"]
+        })
+    return agent_chain
 
 if __name__ == '__main__':
-    import os
+    zero_shot_agent = get_agent_conversion()
+    result = zero_shot_agent({"input": "Who is Ubix?"})
+    result = zero_shot_agent({"input": "Could you help to count how many rows are there in the table test_del?"})
+    result = zero_shot_agent({"input": "Hi, I'm felix"})
+    result = zero_shot_agent({"input": "Who am I"})
 
-    zero_shot_agent = get_agent()
-    result = zero_shot_agent("Who is Ubix?")
-    result = zero_shot_agent("Could you help to count how many rows are there in the table test_del?")
 
-    #
-    # from langchain.memory import ConversationBufferMemory
-    # from langchain.chat_models import ChatOpenAI
-    #
-    # memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-    # llm = ChatOpenAI(temperature=0)
-    # agent_chain = initialize_agent(tools, llm, agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION, verbose=True, memory=memory)
